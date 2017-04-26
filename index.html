@@ -13,12 +13,10 @@
       <div class="screen-panel">
         <h4>ELECTRONIC CALCULATOR</h4> 
         <div class="screen clearfix">
-          <ul class="inputScrn">
-            <li class="initialShow">0</li>
-          </ul>
-          <ul class="pendingOpScrn">
-            <li class="initialShow">0</li>
-          </ul>
+          <ul class="inputScrn"></ul>
+          <div class ="outerOpDiv">
+            <ul class="pendingOpScrn"></ul>
+          </div>
         </div>
       </div>
       <div class="keys-panel clearfix">
@@ -39,11 +37,11 @@
         <ul class="operators">
           <li class="operator">AC</li>
           <li class="operator">CE</li>
-          <li class="operator">&times;</li>
-          <li class="operator">&divide;</li>
-          <li class="operator" id = "plus">+</li>
+          <li class="operator calculate">&times;</li>
+          <li class="operator calculate">&divide;</li>
+          <li class="operator calculate" id = "plus">+</li>
           <li>
-            <div class="operator">-</div>
+            <div class="operator calculate">-</div>
             <div class="operator">=</div>
           </li>
         </ul>

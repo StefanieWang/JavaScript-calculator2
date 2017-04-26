@@ -5,12 +5,14 @@
      -moz-box-sizing: border-box;
          -box-sizing: border-box;
 }
+
 .clearfix:before,
 .clearfix:after {
   content: "";
   display: block;
   clear: both;
 }
+
 .calculator {
   font-family: sans-serif;
   margin-top: 30px;
@@ -18,8 +20,7 @@
   margin-right: auto;
   width: 342px;
   border-radius: 15px;
-  box-shadow: 5px 5px 10px gray;
-  
+  box-shadow: 5px 5px 10px gray;  
 }
 
 .screen-panel {
@@ -30,11 +31,9 @@
 }
 
 h4 {
-  /*margin-top: 15px;*/
   text-align: center;
   font-size: 20px;
-  color: #fff;
-  
+  color: #fff;  
 }
 
 
@@ -49,24 +48,26 @@ h4 {
   background: #E6E6E6;
 }
 
-.inputScrn,
-.pendingOpScrn {
+.inputScrn {
   list-style: none;
   text-align: right;
-  position: relative;
-}
-
-.inputScrn {
   margin-top: 10px;
   height: 40px;
-  font-size: 30px;
+  font-size: 34px;
+}
 
+.outerOpDiv {
+  text-align: right;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .pendingOpScrn {
-  height: 30px;
+  list-style: none;
+  float: right;
+  height: 24px;
   font-size: 24px;
-  color: gray;
+  color: gray;  
 }
 
 .screenList{
