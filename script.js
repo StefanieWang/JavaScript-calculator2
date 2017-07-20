@@ -1,237 +1,206 @@
 function Calculation(){
-  this.inputArr = [];
-  this.inputFloat = undefined;
-  this.lastEntry = undefined;
-  this.lastOperator = "";
-  this.result = undefined;
-  this.inputScrn = $(".inputScrn");
-  this.pendingOpScrn = $(".pendingOpScrn"); 
-  this.pendingOps = [];
-  this.error = false;
-};
-
-
-Calculation.prototype.add = function(){
-  this.result += this.inputFloat;
-};
-
-Calculation.prototype.substract = function(){
-  this.result -= this.inputFloat;
-};
-
-Calculation.prototype.multiply = function(){
-  this.result *= this.inputFloat;
-  if(this.result % 1 !== 0){
-    this.result = this.result.toFixed(2);
-  };
-  
-};
-
-Calculation.prototype.divide = function(){
-  this.result /= this.inputFloat;
-  if(this.result % 1 !== 0){
-    this.result = this.result.toFixed(2);
-  };
-};
-
-Calculation.prototype.calculate = function(){
-  switch(this.lastOperator){
-    case "×":      
-      this.multiply();
-      break;
-    case "÷":
-      this.divide();
-      break;
-    case "+":
-      this.add();
-      break;
-    case "-":
-      this.substract();
-      break;
-  }
-};
-
-Calculation.prototype.clearInputScrn = function(){
-  $(".inputScrn .screenList").remove(); 
-};
-
-Calculation.prototype.showInputs = function(){
-  $(".inputScrn .screenList").remove();
-
-  if(this.inputArr.length === 0){
-    this.inputScrn.append($("<li class=\"screenList\"></li>").html(0))
-  } else {
-    var calculation = this;
-    this.inputArr.forEach(function(item){
-      calculation.inputScrn.append($("<li class=\"screenList\"></li>").html(item));
-    })
-  }
-  
-};
-
-Calculation.prototype.showPendingOperations = function(){
-  $(".pendingOpScrn .screenList").remove(); 
-  
-  if (this.pendingOps.length === 0){
-    this.pendingOpScrn.append($("<li class=\"screenList\"></li>").html(0));
-  } else {
-    var calculation = this;
-    this.pendingOps.forEach(function(item){
-      calculation.pendingOpScrn.append($("<li class=\"screenList\"></li>").html(item));
-    })     
-  };
-};
-  
-Calculation.prototype.showFinalResult = function(){
-  $(".inputScrn .screenList").remove();
-  this.inputScrn.append($("<li class=\"screenList\"></li>").html(this.result));
-};
-
-Calculation.prototype.showErrorMessage = function(message){
-  $(".inputScrn .screenList").remove();
-  this.inputScrn.append($("<li class=\"screenList\"></li>").html(message));
+	this.inputArr = []; // store the current input nums or operator for calculation
+	this.pendingOpsArr = [];// array to store previous input numbers and operators
+	this.result = undefined;
+	this.lastEntry = "";
+	this.error = false;
+	this.inputScrn = $(".inputScrn");// screen to show current inputs
+	this.pendingOpScrn = $(".pendingOpScrn"); //screen to show previous inputs	
 }
 
-Calculation.prototype.showInputsAndPendingOPs = function() {
-  this.showInputs();
-  this.showPendingOperations();
-};
+Calculation.prototype = {
+	constructor: Calculation,
+	
+	parseCalculation: function(calcArr){ //Parse calculation arr into an arr of numbers and operators
+		var calculation = [];
+		var current = [];
+		for(var i = 0; i < calcArr.length; i++){
+           if(calcArr[i].match(/[\d\.]/)){ // If is a number or dot
+           	current.push(calcArr[i])
+           }else{    // ELse is an operator +,-,*,/
+            var num = parseFloat(current.join(""));
+            var operator = calcArr[i];
+            calculation.push(num,operator);
+            current = [];
+           }
 
-Calculation.prototype.checkDigitLimit = function(arr){
-  this.error = false;
+           if(i === calcArr.length-1){
+           	calculation.push(parseFloat(current.join("")))
+           }
+		}
+		return calculation;
+	},
 
-  if(arr.length >= 8){
-    this.error = true;
-    this.showErrorMessage("Digit Limit Met");
-  }
-};
+	calculate: function(calculation){ // Perform a calculation expressed as an array of operators and numbers
+		var a = calculation[0], b, operator, op;
+		
+		var operations = {
+			"+": function(a, b){ return a + b},
+			"-": function(a, b){ return a - b},
+			"×": function(a, b){ return a * b},
+			"÷": function(a, b){ return a / b}
+		}
+        
 
-Calculation.prototype.checkOperatorError = function(){
-  this.error = false;
+		for(var i = 1; i < calculation.length; i++){
+			if(typeof calculation[i] === "string"){
+				operator = calculation[i]
+			}else{
+				b = calculation[i];
+				op = operations[operator]; 
+				a = op(a, b);
+			}
+		} 
+        a = parseFloat(a.toFixed(6))
+		return a;
+	},
 
-  if(this.inputFloat === undefined){
-    this.error = true;
-  }
-  else if(this.lastEntry &&
-          this.lastEntry.hasClass("calculate")){
-    this.error = true;
-  }
-};
+	showInputs: function(){
+		$(".inputScrn .screenList").remove();
+
+		if(this.inputArr.length === 0){
+			this.inputScrn.append($("<li class=\"screenList\"></li>").html(0))
+		} else {
+			var calculation = this;
+			this.inputArr.forEach(function(item){
+		  	calculation.inputScrn.append($("<li class=\"screenList\"></li>").html(item));
+		})
+		}
+	  
+	},
+
+	showPendingOperations: function(){
+		$(".pendingOpScrn .screenList").remove(); 
+
+		if (this.pendingOpsArr.length === 0){
+			this.pendingOpScrn.append($("<li class=\"screenList\"></li>").html(0));
+		} else {
+			var calculation = this;
+			this.pendingOpsArr.forEach(function(item){
+			  calculation.pendingOpScrn.append($("<li class=\"screenList\"></li>").html(item));
+			})     
+		};
+	},
+	  
+	showFinalResult: function(){
+		$(".inputScrn .screenList").remove();
+		this.inputScrn.append($("<li class=\"screenList\"></li>").html(this.result));
+	},
+
+    showErrorMessage: function(message){
+    	$(".inputScrn .screenList").remove();
+        this.inputScrn.append($("<li class=\"screenList\"></li>").html(message));
+    },
+    
+    clearAll: function(){
+    	this.inputArr = []; 
+		this.pendingOpsArr = [];
+		this.lastEntry = "";
+		this.result = undefined;
+		this.error = false;
+    },
+
+	handleDigitInput: function(input){
+        if(this.lastEntry === "="){ // start a new round of calculation
+        	this.clearAll();
+        }else if(this.lastEntry && this.lastEntry.match(/[^\d\.]/)){
+			this.inputArr = [];
+		}
+
+		if(input === "."){
+			if(!this.inputArr.length){
+				input = "0.";
+			}else if (this.inputArr.indexOf(".") > -1 ||
+				      this.inputArr.indexOf("0.") > -1){
+				return; //if already input a dot before, do nothing
+			}
+		}
+        
+        this.lastEntry = input;
+		this.inputArr.push(input);
+		this.pendingOpsArr.push(input);
+		this.showInputs();
+		this.showPendingOperations();
+        
+        var inputDigits = this.inputArr.slice().join("");
+		if(inputDigits.length > 10){
+			this.clearAll();
+			this.showErrorMessage("Digit Limit Met");
+		}     
+	},
+
+	handleOperatorInput: function(input){
+		switch(input){
+			case "AC": 
+				this.clearAll();
+				this.showInputs();
+				this.showPendingOperations();
+				break;
+			case "CE":
+			    if (this.lastEntry === "="){
+			    	this.clearAll();
+			    }else if(this.inputArr.length){
+					this.inputArr.pop();
+			   	    this.pendingOpsArr.pop();
+			   	    this.lastEntry = this.pendingOpsArr[this.pendingOpsArr.length-1];
+				}
+			    this.showInputs();
+			    this.showPendingOperations();
+			    break;
+			case "=":
+				var length = this.pendingOpsArr.length;
+				if(this.lastEntry.match(/\d+/)){
+					var calculation = this.parseCalculation(this.pendingOpsArr);
+				    this.result = this.calculate(calculation);
+				    if(this.result.toString().length > 10){
+				    	this.clearAll();
+				    	this.showErrorMessage("Digit Limit Met");
+				    }else if(this.result === "Infinity") {
+                        this.clearAll();
+                        this.showErrorMessage("Error: Infinity");
+				    }else{
+				    	this.showFinalResult();
+				    	this.inputArr = [];
+				    	this.lastEntry = input;
+				    	this.pendingOpsArr = [this.result.toString()];
+				    }
+				}				
+				break;
+			default: //input is +,-,*,/
+				if(this.lastEntry.match(/[\d+\=]/)){
+					this.inputArr = [input];
+				    this.pendingOpsArr.push(input);
+				    this.lastEntry = input;
+				    this.showInputs();
+				    this.showPendingOperations();
+				}
+				
+		}
+	},
+    
+	handleInput: function(input, inputObj){
+		if(inputObj.hasClass("number")){
+			this.handleDigitInput(input);
+		}else if (inputObj.hasClass("operator")){
+			this.handleOperatorInput(input);
+		}
+	},
+
+	showStartStatus: function(){
+		this.showInputs();
+		this.showPendingOperations();
+	}
+	
+}
 
 $(document).ready(function(){
+	var calc = new Calculation();
+    calc.showStartStatus();
 
-  var calc = new Calculation(); 
-  calc.showInputsAndPendingOPs();
-
-  var handleNumberInput = function(inputObj, input){
-    //if pending operation has finished,
-    //start a new calculation
-    if(calc.lastEntry &&
-      calc.lastEntry.html() === "="){
-      calc = new Calculation;
-    }; 
-    //else if pending operation not finished
-    if(calc.lastEntry &&
-      calc.lastEntry.hasClass("operator")){
-      calc.inputArr = [];
-      calc.pendingOps.push(calc.lastEntry.html());
-      calc.lastOperator = calc.lastEntry.html();
-    };
-    calc.inputArr.push(input);
-    calc.lastEntry = inputObj;   
-    calc.showInputsAndPendingOPs();
-  };
-  
- var handleOperatorInput = function(inputObj, input){    
-    switch(input){
-      case "AC"://All Clear 
-        calc = new Calculation();
-        calc.showInputsAndPendingOPs();
-        break;
-      case "CE"://Clear last entered operation or float number
-        if(calc.lastOperator === "="){
-          calc = new Calculation();
-        } else {
-          calc.pendingOps.pop();
-          calc.lastEntry = undefined;
-        };
-        calc.showInputsAndPendingOPs();
-        break;  
-      case "=":
-        if(calc.inputFloat){
-          calc.calculate(); 
-        };
-        calc.lastOperator = input;
-        calc.lastEntry = inputObj;
-        calc.showPendingOperations();
-        var resultArr = calc.result.toString().split("");
-        resultArr.pop();
-        calc.checkDigitLimit(resultArr);      
-        if(calc.error){
-          calc = new Calculation();
-        }else{
-          calc.showFinalResult();
-        };       
-        break;
-      default:// input is "+","-","*","/"      
-        if(calc.result === undefined){
-          calc.result = calc.inputFloat;          
-        } else {
-          calc.calculate();  ;
-        };
-        calc.lastEntry = inputObj;
-        calc.inputArr.push(input);
-        calc.showInputsAndPendingOPs();       
-    }
-  };
-
-  $(".keys-panel").on({
-    mousedown: function(event){
-      var key = $(event.target);
-      if(key.attr("id")==="plus"){
-        key.height("109px");
-      } else if(key.hasClass("number")||key.hasClass("operator")){
-        key.height("43px");
-      };
-    },
-    mouseup: function(event){
-      var key = $(event.target);
-      if(key.attr("id")==="plus"){
-        key.height("111px");
-      } else if(key.hasClass("number")||key.hasClass("operator")){
-        key.height("46px");
-      };
-    },
-    click: function(event) {
-      var inputObj = $(event.target);
-      var input = inputObj.html();
-            
-      if(inputObj.hasClass("number")){
-        calc.checkDigitLimit(calc.inputArr);
-        if(calc.error){
-          calc = new Calculation();
-        }
-        else {
-          handleNumberInput(inputObj, input);
-        }
-      }
-      else if(inputObj.hasClass("operator")){
-        if(calc.inputArr.length){
-          calc.inputFloat = parseFloat(calc.inputArr.join(""));
-          calc.inputArr = [];
-          calc.pendingOps.push(calc.inputFloat);
-        };
-        if(input !== "AC"&&
-           input !== "CE"){
-          calc.checkOperatorError();
-        };
-        if(!calc.error){
-          handleOperatorInput(inputObj, input);
-        };
-      };
-    }
-  });
-  
+	$(".keys-panel").click(function(event) {
+		var inputObj = $(event.target);
+		var input = $(event.target).html();    
+		calc.handleInput(input, inputObj);
+    });
   
 })
-

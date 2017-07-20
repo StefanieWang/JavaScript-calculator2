@@ -107,6 +107,12 @@ h4 {
   cursor: pointer;
 }
 
+.number:active,
+.operator:active {
+  border-bottom: 0;
+  transform: translateY(2px); 
+}
+
 .numbers {
   float: left;
   width: 177px;
