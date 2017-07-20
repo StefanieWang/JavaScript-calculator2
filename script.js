@@ -152,10 +152,11 @@ Calculation.prototype = {
 				if(this.lastEntry.match(/\d+/)){
 					var calculation = this.parseCalculation(this.pendingOpsArr);
 				    this.result = this.calculate(calculation);
+
 				    if(this.result.toString().length > 10){
 				    	this.clearAll();
 				    	this.showErrorMessage("Digit Limit Met");
-				    }else if(this.result === "Infinity") {
+				    }else if(this.result === Infinity) {
                         this.clearAll();
                         this.showErrorMessage("Error: Infinity");
 				    }else{
